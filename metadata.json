@@ -1,0 +1,7 @@
+{
+  "name": "Leather Wallah",
+  "description": "Premium leather products e-commerce store with admin panel and order tracking.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}

@@ -1,0 +1,104 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: products
+    // Fields:
+    //   - name: string (required)
+    //   - price: number (required)
+    //   - category: string (required)
+    //   - description: string
+    //   - images: list (strings)
+    //   - sizes: list (strings)
+    //   - colors: list (strings)
+    //   - inStock: bool (required)
+    //   - featured: bool
+    //   - createdAt: timestamp
+    //
+    // Collection: orders
+    // Fields:
+    //   - orderNumber: string (required)
+    //   - customer: map (required)
+    //     - name: string
+    //     - phone: string
+    //     - whatsapp: string
+    //     - address: map
+    //       - district: string
+    //       - thana: string
+    //       - village: string
+    //   - items: list (maps)
+    //   - total: number (required)
+    //   - status: string (required, enum: pending, confirmed, shipped, delivered)
+    //   - trackingLink: string
+    //   - createdAt: timestamp
+    //
+    // Collection: banners
+    // Fields:
+    //   - title: string (required)
+    //   - subtitle: string
+    //   - buttonText: string
+    //   - buttonLink: string
+    //   - imageUrl: string (required)
+    //   - order: number (required)
+    //   - active: bool (required)
+    //   - createdAt: timestamp
+    //
+    // ===============================================================
+
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+             (request.auth.token.email == "mdemamh587@gmail.com" || 
+              request.auth.token.email == "thasinislam401@gmail.com");
+    }
+    
+    function isValidProduct(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() < 200 &&
+             data.price is number && data.price >= 0 &&
+             data.category is string &&
+             data.inStock is bool;
+    }
+
+    function isValidOrder(data) {
+      return data.orderNumber is string &&
+             data.customer is map &&
+             data.items is list &&
+             data.total is number &&
+             data.status in ['pending', 'confirmed', 'shipped', 'delivered'];
+    }
+
+    function isValidBanner(data) {
+      return data.title is string && data.title.size() > 0 &&
+             data.imageUrl is string && data.imageUrl.size() > 0 &&
+             data.order is number &&
+             data.active is bool;
+    }
+
+    // Products: Everyone can read, only admin can write
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Orders: Anyone can create (guest checkout), anyone can read by phone (query), admin can update
+    match /orders/{orderId} {
+      allow create: if isValidOrder(request.resource.data);
+      allow read: if true; // Needed for tracking by phone number
+      allow update, delete: if isAdmin();
+    }
+
+    // Banners: Everyone can read, only admin can write
+    match /banners/{bannerId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidBanner(request.resource.data);
+    }
+  }
+}

@@ -1,0 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap');
+@import "tailwindcss";
+@import "react-quill-new/dist/quill.snow.css";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  --color-leather-50: #FDFBF7;
+  --color-leather-100: #F5F0E6;
+  --color-leather-200: #E6D5BC;
+  --color-leather-600: #8D6E63;
+  --color-leather-700: #5D4037;
+  --color-leather-800: #4E342E;
+  --color-leather-900: #3E2723;
+  
+  --color-gold-400: #F1D279;
+  --color-gold-500: #D4AF37;
+  --color-gold-600: #B8860B;
+}
+
+@layer base {
+  html, body {
+    @apply bg-leather-50 text-leather-900 antialiased overflow-x-hidden w-full;
+    -webkit-tap-highlight-color: transparent;
+  }
+  h1, h2, h3, h4 {
+    @apply font-serif;
+  }
+}
+
+/* Flutter-style smooth UI feel */
+* {
+  @apply transition-colors duration-200;
+}
+
+.smooth-scroll {
+  scroll-behavior: smooth;
+}
+
+/* Prevent layout shifts */
+img {
+  content-visibility: auto;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
